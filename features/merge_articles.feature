@@ -29,33 +29,34 @@ Feature: Merge Articles
     Then I should be on the edit page for the "peter-piper" article
       And the "article__body_and_extended_editor" field should contain "was a bear"
       And the "article__body_and_extended_editor" field should contain "picked a peck"
-    When I go to the comments page for the "peter-piper" article
-    Then I should see "had no hair"
-      And I should see "where's the peck?"
+      And the "fuzzy-wuzzy" article should not exist
+      And the "peter-piper" article should have "2" comments
+      And the "peter-piper" article should have a comment with "had no hair"
+      And the "peter-piper" article should have a comment with "where's the peck?"
 
+
+  Scenario: Unsuccessfull when the current article's id is given for merging
+    Given I am logged into the admin panel
+      And I am an administrator
+    And I am on the edit page for the "peter-piper" article
+    When I fill in "merge_with" with the id of the "peter-piper" article
+      And I press "Merge"
+    Then I should see "Error, you can't merge an article to itself"
 
   Scenario: No merge articles option for new articles
     Given I am on the new article page
     Then I should not see "Merge Articles"
 
   Scenario: Unsuccessfull when merge_with value is empty
-    Given I am on the edit page for article with id "1"
-    And I am an administrator
+    Given I am logged into the admin panel
+      And I am on the edit page for article with id "1"
     When I press "Merge"
-    Then I should see an exception
-
-  Scenario: Unsuccessfull when the current article's id is given for merging
-    Given I am on the edit page for article with id "1"
-    And I am an administrator
-    When I fill in "other_article_id" with 3
-    And I press "Merge"
-    Then I should see an exception
+    Then I should see "Error, expected an article id for the merge"
 
   Scenario: Unsuccessful when a non-existant id is provided for merging
-    Given I am on the edit page for article with id "1"
-    And I am an administrator
-    And article 42 does not exist
-    When I fill in "other_article_id" with 42
+    Given I am logged into the admin panel
+    And I am on the edit page for article with id "1"
+    When I fill in "merge_with" with "42"
     And I press "Merge"
-    Then I should see an exception
+    Then I should see "Error, there is no article with id"
 

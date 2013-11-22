@@ -20,6 +20,32 @@ Given /^I am not an administrator$/ do
   @current_user.admin?.should be_false
 end
 
+
+And /^the \"(.*?)\" article should have a comment with \"(.*?)\"$/ do |permalink, text| #"
+  a = Article.where(:permalink=>permalink)[0]
+  m = false
+  a.comments.each{ |comment|
+    #debugger
+    if comment.body.include?(text)
+      m = true
+      break
+    end
+  }
+  m.should be_true
+end
+
+And /the \"(.*?)\" article should have \"(.*?)\" comments/ do |permalink, count| #"
+  Article.where(:permalink=>permalink)[0].comments.length.should == count.to_i
+end
+
+Then /^the \"(.*?)\" article should not exist$/  do |permalink| #"
+  lambda {
+    arts = Article.where(:permalink=>permalink)
+    arts.length.should == 1
+    arts[0]
+  }.should raise_error
+end
+
 Given /^I am an administrator$/ do
   @current_user.admin?.should be_true
 end
@@ -40,8 +66,8 @@ end
 
 #   I fill in "merge_with" with the id of the "peter-piper" article
 When /^I fill in "(.*?)" with the id of the "(.*?)" article$/ do |field, permalink|
-      arts = Article.where(:permalink=>permalink)
-      arts.length.should == 1
-      art = arts[0]
-      fill_in(field, :with=>art.id)
+  arts = Article.where(:permalink=>permalink)
+  arts.length.should == 1
+  art = arts[0]
+  fill_in(field, :with=>art.id)
 end
