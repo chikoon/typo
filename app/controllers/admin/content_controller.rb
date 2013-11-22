@@ -139,7 +139,14 @@ class Admin::ContentController < Admin::BaseController
 
   def real_action_for(action); { 'add' => :<<, 'remove' => :delete}[action]; end
 
+
+  #def merge
+  #  @article = Article.find(params[:article][:id])
+  #  @merge_with = params[:article][:merge_with]
+  #end
+
   def new_or_edit
+
     id = params[:id]
     id = params[:article][:id] if params[:article] && params[:article][:id]
     @article = Article.get_or_build_article(id)
@@ -165,7 +172,26 @@ class Admin::ContentController < Admin::BaseController
     if request.post?
       set_article_author
       save_attachments
-      
+
+      if params[:merge_article_button] and !params[:merge_with].empty?
+        merge_id = params[:merge_with]
+        unless current_user.admin?
+          redirect_to :action => 'index'
+          flash[:error] = _("Error, you are not allowed to perform this action")
+          return
+        end
+        article_to_merge = Article.find_by_id(merge_id)
+        unless article_to_merge
+          redirect_to :controller=> 'admin/content', :action => 'edit', :id=>@article.id
+          flash[:error] = _("Error, there is no article with id #{merge_id}")
+          return
+        end
+        new_article = @article.merge_with(article_to_merge)
+        flash[:notice] = _("Successfully merged article #{@article.id} with article #{article_to_merge.id} to make article #{new_article.id}!")
+        redirect_to :controller=> 'admin/content', :action => 'edit', :id=>new_article.id
+        return
+      end
+
       @article.state = "draft" if @article.draft
 
       if @article.save

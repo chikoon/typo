@@ -35,19 +35,35 @@ Given /^the blog is set up$/ do
   Blog.default.update_attributes!({:blog_name => 'Teh Blag',
                                    :base_url => 'http://localhost:3000'});
   Blog.default.save!
-  User.create!({:login => 'admin',
-                :password => 'aaaaaaaa',
+  @everyones_passwd = 'aaaaaaaa'
+  @admin_user = User.create!({:login => 'admin',
+                :password => @everyones_passwd,
                 :email => 'joe@snow.com',
                 :profile_id => 1,
                 :name => 'admin',
                 :state => 'active'})
+  @publisher = User.create!({:login => 'publisher',
+                :password => @everyones_passwd,
+                :email => 'joe@slow.com',
+                :profile_id => 2,
+                :name => 'publisher',
+                :state => 'active'})
+
+  @contributor = User.create!({:login => 'contrib',
+                :password => @everyones_passwd,
+                :email => 'joe@blow.com',
+                :profile_id => 3,
+                :name => 'contrib',
+                :state => 'active'})
 end
+
 
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
-  fill_in 'user_login', :with => 'admin'
-  fill_in 'user_password', :with => 'aaaaaaaa'
+  fill_in 'user_login', :with => @admin_user.login
+  fill_in 'user_password', :with => @everyones_passwd
   click_button 'Login'
+  @current_user = @admin_user
   if page.respond_to? :should
     page.should have_content('Login successful')
   else

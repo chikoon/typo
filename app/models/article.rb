@@ -6,6 +6,8 @@ class Article < Content
   include TypoGuid
   include ConfigManager
 
+
+  attr_accessor :merge_with
   serialize :settings, Hash
 
   content_fields :body, :extended
@@ -416,6 +418,17 @@ class Article < Content
     user.admin? || user_id == user.id
   end
 
+  def merge_with(article_to_merge)
+    new_article = self.clone # @self.dup  ???
+    article_to_merge.comments.each{|comment|
+      new_article.comments.push(comment)
+    }
+    new_article.guid = nil
+    new_article.body = "#{new_article.body}\n\n#{article_to_merge.body}"
+    new_article.save!
+    new_article
+  end
+
   protected
 
   def set_published_at
@@ -466,4 +479,5 @@ class Article < Content
     to = to - 1 # pull off 1 second so we don't overlap onto the next day
     return from..to
   end
+
 end

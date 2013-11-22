@@ -15,8 +15,23 @@ module NavigationHelpers
 
     when /^the home\s?page$/
       '/'
+
     when /^the new article page$/
       '/admin/content/new'
+
+    when /^the edit page for an article I wrote$/
+      a = Article.find_by_author(@current_user)
+      "/admin/content/edit/#{a.id}"
+      
+    when /^the edit page for the \"(.*)\" article$/
+      r = Article.where(:permalink=>$1)
+      r.length.should == 1
+      a = r[0]
+      "/admin/content/edit/#{a.id}"
+
+    when /^the edit page for article with id \"(.*)\"$/
+      debugger
+      "/admin/content/edit/#{$1}"
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

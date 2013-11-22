@@ -280,4 +280,5 @@ class ArticlesController < ContentController
       # TODO :Check in request_article type of DATA made in next step
     end
   end
+
 end
