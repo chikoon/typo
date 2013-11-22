@@ -1,12 +1,12 @@
 development:
   adapter: sqlite3
   database: db/db_development
-  timeout: 5000
+  timeout: 30000
 
 test: &test
   adapter: sqlite3
   database: db/db_test
-  timeout: 5000
+  timeout: 30000
 
 production:
   adapter: postgresql

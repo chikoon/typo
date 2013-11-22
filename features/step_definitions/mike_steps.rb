@@ -4,12 +4,15 @@ Given /the following articles exist/ do |content_table|
     # you should arrange to add that movie to the database here.
     user = User.find_by_login(article[:author])
     #user.should be_valid
-    Article.create(
-      :author     => user,
+    a = Article.create(
+      :author     => user.id,
+      :user       => user,
       :title      => article[:title],
       :body       => article[:body],
       :permalink  => article[:permalink]
     )
+    a.comments.push(Comment.new(:body=>article[:comment], :author=>'cucumber'))
+    #a.save!
   end
 end
 
@@ -35,3 +38,10 @@ And /^I am logged in as a publisher$/ do
   @current_user.admin?.should be_false
 end
 
+#   I fill in "merge_with" with the id of the "peter-piper" article
+When /^I fill in "(.*?)" with the id of the "(.*?)" article$/ do |field, permalink|
+      arts = Article.where(:permalink=>permalink)
+      arts.length.should == 1
+      art = arts[0]
+      fill_in(field, :with=>art.id)
+end

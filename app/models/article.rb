@@ -418,15 +418,16 @@ class Article < Content
     user.admin? || user_id == user.id
   end
 
-  def merge_with(article_to_merge)
-    new_article = self.clone # @self.dup  ???
-    article_to_merge.comments.each{|comment|
-      new_article.comments.push(comment)
+  def merge_with(merge_article)
+    self.comments.each_with_index{|comment, idx|
+      c = Comment.new(:article_id=>merge_article.id, :author=>comment.author, :body=>comment.body)
+      merge_article.comments.push(c)
+      self.comments[idx].destroy
     }
-    new_article.guid = nil
-    new_article.body = "#{new_article.body}\n\n#{article_to_merge.body}"
-    new_article.save!
-    new_article
+    merge_article.body = "#{merge_article.body}\n\n#{self.body}"
+    merge_article.save!
+    self.destroy
+    merge_article
   end
 
   protected

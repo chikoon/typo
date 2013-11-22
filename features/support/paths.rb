@@ -10,6 +10,12 @@ module NavigationHelpers
   #
   # step definition in web_steps.rb
   #
+  def article_by_permalink(permalink)
+      arts = Article.where(:permalink=>permalink)
+      arts.length.should == 1
+      arts[0]
+  end
+
   def path_to(page_name)
     case page_name
 
@@ -22,15 +28,24 @@ module NavigationHelpers
     when /^the edit page for an article I wrote$/
       a = Article.find_by_author(@current_user)
       "/admin/content/edit/#{a.id}"
-      
+
+    when /^the public page for the \"(.*)\" article$/
+      art = article_by_permalink($1)
+      #debugger
+      art.permalink_url(anchor=nil, only_path=true)
+
+    # the comments page for the "peter-piper" article
+    when /^the comments page for the \"(.*)\" article$/
+      art = article_by_permalink($1)
+      #debugger
+      "/comments?article_id=#{art.id}"
+
+
     when /^the edit page for the \"(.*)\" article$/
-      r = Article.where(:permalink=>$1)
-      r.length.should == 1
-      a = r[0]
-      "/admin/content/edit/#{a.id}"
+      art = article_by_permalink($1)
+      "/admin/content/edit/#{art.id}"
 
     when /^the edit page for article with id \"(.*)\"$/
-      debugger
       "/admin/content/edit/#{$1}"
 
     # Add more mappings here.

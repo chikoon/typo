@@ -186,9 +186,10 @@ class Admin::ContentController < Admin::BaseController
           flash[:error] = _("Error, there is no article with id #{merge_id}")
           return
         end
-        new_article = @article.merge_with(article_to_merge)
-        flash[:notice] = _("Successfully merged article #{@article.id} with article #{article_to_merge.id} to make article #{new_article.id}!")
-        redirect_to :controller=> 'admin/content', :action => 'edit', :id=>new_article.id
+        merged_article = @article.merge_with(article_to_merge)
+        flash[:notice] = _("Successfully merged article #{@article.id} with article #{merged_article.id}!")
+        @article = merged_article
+        redirect_to :controller=> 'admin/content', :action => 'edit', :id=>@article.id
         return
       end
 
