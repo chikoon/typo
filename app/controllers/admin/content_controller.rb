@@ -173,7 +173,8 @@ class Admin::ContentController < Admin::BaseController
       set_article_author
       save_attachments
 
-      if params[:merge_article_button] and !params[:merge_with].empty?
+      #if params[:merge_article_button] and !params[:merge_with].empty?
+      if !params[:merge_with].empty?
         merge_id = params[:merge_with]
         unless current_user.admin?
           redirect_to :action => 'index'
