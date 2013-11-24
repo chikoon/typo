@@ -42,7 +42,7 @@ class Admin::CategoriesController < Admin::BaseController
     if @category.id
       @form_action =  url_for(:action=>"edit", :id => @category.id, :only_path=>true)
     else
-      @form_action = 'new'
+      @form_action = url_for(:action=>'edit')
     end
     render 'new'
   end
