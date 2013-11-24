@@ -21,6 +21,9 @@ module NavigationHelpers
 
     when /^the home\s?page$/
       '/'
+    
+    when /^the admin home page$/
+      '/admin'
 
     when /^the new article page$/
       '/admin/content/new'
